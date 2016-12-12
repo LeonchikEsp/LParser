@@ -1,7 +1,0 @@
-c:=a+b/3-3%1;
-
-if (a+1) == 0 && b ==1 then print a else skip;
-
-write a;
-
-if x<= a then while a!=0 do i+1 else skip = 23
