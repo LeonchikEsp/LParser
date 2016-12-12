@@ -31,6 +31,8 @@ data Statement = Seq [Statement]
           | If BooleanExpressions Statement Statement
           | While BooleanExpressions Statement
           | Skip
+          | WriteEx ArithExpr
+          | ReadEx String
           deriving (Show)
 
 languageDef =
@@ -52,6 +54,8 @@ languageDef =
                                      , "not"
                                      , "and"
                                      , "or"
+                                     , "read"
+                                     , "write"
                                      ]
            , Token.reservedOpNames = ["==", "!=", ">=", "<=", "&&", "||",
                                       "+", "-", "*", "/", ":=",
@@ -64,7 +68,7 @@ identifier = Token.identifier lexer -- parses an identifier
 reserved   = Token.reserved   lexer -- parses a reserved name
 reservedOp = Token.reservedOp lexer -- parses an operator
 parens     = Token.parens     lexer -- parses surrounding parenthesis:
-                                    --   parens p
+                                    -- parens p
                                     -- takes care of the parenthesis and
                                     -- uses p to parse what's inside them
 integer    = Token.integer    lexer -- parses an integer
@@ -88,6 +92,8 @@ statement' =   ifStmt
            <|> whileStmt
            <|> skipStmt
            <|> assignStmt
+           <|> readStmt
+           <|> writeStmt
 
 ifStmt :: Parser Statement
 ifStmt =
@@ -118,7 +124,19 @@ assignStmt =
 
 
 skipStmt :: Parser Statement
-skipStmt = reserved "skip" >> return Skip         
+skipStmt = reserved "skip" >> return Skip      
+
+readStmt :: Parser Statement
+readStmt = 
+  do reserved "read"
+     var <- identifier
+     return $ ReadEx var
+
+writeStmt :: Parser Statement
+writeStmt = 
+  do reserved "write"
+     expr <- aExpression
+     return $ WriteEx expr
 
 aExpression :: Parser ArithExpr
 aExpression = buildExpressionParser aOperators aTerm
