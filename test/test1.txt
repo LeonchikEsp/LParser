@@ -1,9 +1,0 @@
-a:=a;
-b:=b;
-
-c:=a+b/3-3%1;
-
-if (a+1) == 0 then print a else print b
-
-a**2
-s*2***1
